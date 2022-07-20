@@ -13,8 +13,10 @@ const importObject = { wasi_snapshot_preview1: wasi.wasiImport };
   wasi.start(instance);
 
   let helloStringPosition = instance.exports.hello()
+  let heyStringPosition = instance.exports.hey()
 
-  console.log("🖐 position of the string pointer ([]byte)", helloStringPosition)
+  console.log("🖐 position of the hello string pointer ([]byte)", helloStringPosition)
+  console.log("🖐 position of the hey string pointer ([]byte)", heyStringPosition)
   let memory = instance.exports.memory
 
   //console.log("🤖 memory.buffer:", memory.buffer)
@@ -27,19 +29,21 @@ const importObject = { wasi_snapshot_preview1: wasi.wasiImport };
   */
   const completeBufferFromMemory = new Uint8Array(memory.buffer)
 
-  console.log("🤖 buffer:", completeBufferFromMemory)
-  console.log("start   --->", completeBufferFromMemory[helloStringPosition], String.fromCharCode(completeBufferFromMemory[helloStringPosition]))
-  console.log("extract --->", completeBufferFromMemory.slice(helloStringPosition, helloStringPosition+11))
+console.log("--- hello ---------------------------")
+completeBufferFromMemory.slice(helloStringPosition, helloStringPosition+11+5).forEach((item, index) => console.log(helloStringPosition+index,"->", item,":",String.fromCharCode(item)))
+console.log("--- hey -----------------------------")
+completeBufferFromMemory.slice(heyStringPosition, heyStringPosition+10+5).forEach((item, index) => console.log(heyStringPosition+index,"->",item,":",String.fromCharCode(item)))
 
-  completeBufferFromMemory.slice(helloStringPosition, helloStringPosition+11).forEach(item => console.log(item,":",String.fromCharCode(item)))
+// Hello
+const extractedBuffer = new Uint8Array(memory.buffer, helloStringPosition);
+
+console.log("😁 Uint8Array buffer:", extractedBuffer)
+console.log("🎉 Pos of 1st 0:", extractedBuffer.indexOf(0))
+
+const str = new TextDecoder("utf8").decode(extractedBuffer.slice(0, extractedBuffer.indexOf(0)))
+console.log(`📝: ${str}`)
 
 
-  const extractedBuffer = new Uint8Array(memory.buffer, helloStringPosition, 11) // 11 == length of "hello world"
-
-  console.log("😁 Uint8Array buffer:", extractedBuffer)
-
-  const str = new TextDecoder("utf8").decode(extractedBuffer)
-  console.log(`📝: ${str}`)
 
 })();
 

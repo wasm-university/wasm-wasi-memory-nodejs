@@ -12,9 +12,15 @@ const importObject = { wasi_snapshot_preview1: wasi.wasiImport };
 
   wasi.start(instance);
 
-  let helloStringPosition = instance.exports.hello()
+  let helloStringPosition = instance.exports.hello() // ptrSize
+
+  /*
+	helloWorldPtr := uint32(ptrSize[0] >> 32)
+	helloWorldSize := uint32(ptrSize[0])
+  */
 
   console.log("🖐 position of the string pointer ([]byte)", helloStringPosition)
+  console.log(helloStringPosition, typeof helloStringPosition) // bigInt
   let memory = instance.exports.memory
 
   //console.log("🤖 memory.buffer:", memory.buffer)
@@ -28,10 +34,12 @@ const importObject = { wasi_snapshot_preview1: wasi.wasiImport };
   const completeBufferFromMemory = new Uint8Array(memory.buffer)
 
   console.log("🤖 buffer:", completeBufferFromMemory)
+
+  /*
   console.log("start   --->", completeBufferFromMemory[helloStringPosition], String.fromCharCode(completeBufferFromMemory[helloStringPosition]))
   console.log("extract --->", completeBufferFromMemory.slice(helloStringPosition, helloStringPosition+11))
 
-  completeBufferFromMemory.slice(helloStringPosition, helloStringPosition+11).forEach(item => console.log(item,":",String.fromCharCode(item)))
+  let message = completeBufferFromMemory.slice(helloStringPosition, helloStringPosition+11).forEach(item => console.log(item,":",String.fromCharCode(item)))
 
 
   const extractedBuffer = new Uint8Array(memory.buffer, helloStringPosition, 11) // 11 == length of "hello world"
@@ -40,6 +48,7 @@ const importObject = { wasi_snapshot_preview1: wasi.wasiImport };
 
   const str = new TextDecoder("utf8").decode(extractedBuffer)
   console.log(`📝: ${str}`)
+  */
 
 })();
 
