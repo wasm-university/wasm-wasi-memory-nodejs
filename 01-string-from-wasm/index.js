@@ -12,30 +12,36 @@ const importObject = { wasi_snapshot_preview1: wasi.wasiImport };
 
   wasi.start(instance);
 
-  let helloValue = instance.exports.hello()
-  console.log("🖐 position of string pointer ([]byte)", helloValue)
+  let helloStringPosition = instance.exports.hello()
+
+  console.log("🖐 position of the string pointer ([]byte)", helloStringPosition)
   let memory = instance.exports.memory
 
-  console.log("🤖 memory.buffer:", memory.buffer)
+  //console.log("🤖 memory.buffer:", memory.buffer)
+  /*
+    memory.buffer is an ArrayBuffer
+    https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer
 
-  const buffer = new Uint8Array(memory.buffer, helloValue, 11) // 11 == length of "hello world"
-  const str = new TextDecoder("utf8").decode(buffer)
+    It is an array of bytes, often referred to in other languages as a "byte array". You cannot directly manipulate the contents of an ArrayBuffer; instead, you create one of the typed array objects or a DataView object which represents the buffer in a specific format, and use that to read and write the contents of the buffer.
+
+  */
+  const completeBufferFromMemory = new Uint8Array(memory.buffer)
+
+  console.log("🤖 buffer:", completeBufferFromMemory)
+  console.log("start   --->", completeBufferFromMemory[helloStringPosition], String.fromCharCode(completeBufferFromMemory[helloStringPosition]))
+  console.log("extract --->", completeBufferFromMemory.slice(helloStringPosition, helloStringPosition+11))
+
+  let message = completeBufferFromMemory.slice(helloStringPosition, helloStringPosition+11).forEach(item => console.log(item,":",String.fromCharCode(item)))
+
+  console.log(message)
+
+  const extractedBuffer = new Uint8Array(memory.buffer, helloStringPosition, 11) // 11 == length of "hello world"
+
+  console.log("😁 Uint8Array buffer:", extractedBuffer)
+
+  const str = new TextDecoder("utf8").decode(extractedBuffer)
   console.log(`📝: ${str}`)
 
 })();
 
 // $ node --experimental-wasi-unstable-preview1 index.js
-
-/*
-  - read the memory
-  - get buffer at the position of the value
-  - transform the buffer to string
-*/
-
-/*
-const greetValue = instance.exports.greet();
-const memory = instance.exports.memory;
-const buffer = new Uint8Array(memory.buffer, greetValue, 12);
-const str = new TextDecoder("utf8").decode(buffer);
-console.log(`📝: ${str}`)
-*/

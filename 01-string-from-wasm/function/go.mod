@@ -1,3 +1,3 @@
-module github.com/wasm-university/wasm-js-server-side/03-planetoid-wasi/function
+module github.com/wasm-university/wasm-wasi-memory-nodejs/01-string-from-wasm/function/hello
 
 go 1.18
