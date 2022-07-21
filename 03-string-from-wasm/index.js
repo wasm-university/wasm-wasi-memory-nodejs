@@ -35,11 +35,17 @@ const importObject = { wasi_snapshot_preview1: wasi.wasiImport };
 
   console.log("🤖 buffer:", completeBufferFromMemory)
 
+  const MASK = (2n**32n)-1n
   let stringPtrPosition = Number(helloStringPosition >> BigInt(32))
+  let stringSize = Number(helloStringPosition & MASK)
 
-  console.log("extract --->", completeBufferFromMemory.slice(stringPtrPosition, stringPtrPosition+11))
+  const extractedBuffer = completeBufferFromMemory.slice(stringPtrPosition, stringPtrPosition+stringSize)
+  console.log("extract --->", extractedBuffer)
 
-  
+  const str = new TextDecoder("utf8").decode(extractedBuffer)
+  console.log(`📝: ${str}`)
+
+
   /*
   console.log("start   --->", completeBufferFromMemory[helloStringPosition], String.fromCharCode(completeBufferFromMemory[helloStringPosition]))
   console.log("extract --->", completeBufferFromMemory.slice(helloStringPosition, helloStringPosition+11))
