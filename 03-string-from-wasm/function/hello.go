@@ -2,6 +2,7 @@ package main
 
 import (
   "unsafe"
+  "fmt"
 )
 
 // Declare a main function, this is the entrypoint into our go module
@@ -11,6 +12,7 @@ func main() { }
 //export hello
 func hello() uint64 { // ptrAndSize
 
+
   message := "hello world"
 	buf := []byte(message)
 	bufPtr := &buf[0]
@@ -19,6 +21,12 @@ func hello() uint64 { // ptrAndSize
   ptr := uint32(unsafePtr)
   size := uint32(len(buf))
 
-	return (uint64(ptr) << uint64(32)) | uint64(size)
+  fmt.Println("ptr:", ptr)
+  fmt.Println("size", size)
+  ret := (uint64(ptr) << uint64(32)) | uint64(size)
+
+  fmt.Println("ret:", ret)
+
+	return ret
 }
 
