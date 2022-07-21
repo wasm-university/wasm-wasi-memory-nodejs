@@ -35,6 +35,11 @@ const importObject = { wasi_snapshot_preview1: wasi.wasiImport };
 
   console.log("🤖 buffer:", completeBufferFromMemory)
 
+  let stringPtrPosition = Number(helloStringPosition >> BigInt(32))
+
+  console.log("extract --->", completeBufferFromMemory.slice(stringPtrPosition, stringPtrPosition+11))
+
+  
   /*
   console.log("start   --->", completeBufferFromMemory[helloStringPosition], String.fromCharCode(completeBufferFromMemory[helloStringPosition]))
   console.log("extract --->", completeBufferFromMemory.slice(helloStringPosition, helloStringPosition+11))
