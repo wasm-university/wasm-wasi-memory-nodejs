@@ -4,6 +4,21 @@ const { WASI } = require("wasi");
 const wasi = new WASI();
 const importObject = { wasi_snapshot_preview1: wasi.wasiImport };
 
+
+// Copy `data` into the `instance` exported memory buffer.
+function copyMemory(data, instance) {
+  // the `alloc` function returns an offset in
+  // the module's memory to the start of the block
+  var ptr = instance.exports.alloc(data.length);
+  // create a typed `ArrayBuffer` at `ptr` of proper size
+  var mem = new Uint8Array(instance.exports.memory.buffer, ptr, data.length);
+  // copy the content of `data` into the memory buffer
+  mem.set(new Uint8Array(data));
+  // return the pointer
+  return ptr;
+}
+
+
 (async () => {
   const wasm = await WebAssembly.compile(
     fs.readFileSync("./function/hello.wasm")
@@ -12,8 +27,19 @@ const importObject = { wasi_snapshot_preview1: wasi.wasiImport };
 
   wasi.start(instance);
 
+
+  // 🖐 Prepare parameters
+  // transform the input string into its UTF-8 representation
+  var bytes = new TextEncoder("utf-8").encode("Bob Morane");
+
+  // copy the contents of the string into the module's memory
+  var ptr = copyMemory(bytes, instance);
+
+  // call the module's `hello` function and
+  // get the offset into the memory where the
+  // module wrote the result string
   // call hello
-  let helloStringPosition = instance.exports.hello() // ptrSize
+  let helloStringPosition = instance.exports.hello(ptr, bytes.length); // ptrSize
 
   /*
 	helloWorldPtr := uint32(ptrSize[0] >> 32)
@@ -61,6 +87,9 @@ const importObject = { wasi_snapshot_preview1: wasi.wasiImport };
   const str = new TextDecoder("utf8").decode(extractedBuffer)
   console.log(`📝: ${str}`)
   */
+
+  // call the module's `dealloc` function
+  instance.exports.dealloc(ptr, bytes.length);
 
 })();
 
