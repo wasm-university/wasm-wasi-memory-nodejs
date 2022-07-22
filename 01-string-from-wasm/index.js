@@ -12,10 +12,11 @@ const importObject = { wasi_snapshot_preview1: wasi.wasiImport };
 
   wasi.start(instance);
 
-  let helloStringPosition = instance.exports.hello()
+  const helloStringPosition = instance.exports.hello()
 
-  console.log("🖐 position of the string pointer ([]byte)", helloStringPosition)
-  let memory = instance.exports.memory
+  console.log("position of the pointer", helloStringPosition)
+
+  const memory = instance.exports.memory
 
   //console.log("🤖 memory.buffer:", memory.buffer)
   /*
@@ -25,18 +26,18 @@ const importObject = { wasi_snapshot_preview1: wasi.wasiImport };
     It is an array of bytes, often referred to in other languages as a "byte array". You cannot directly manipulate the contents of an ArrayBuffer; instead, you create one of the typed array objects or a DataView object which represents the buffer in a specific format, and use that to read and write the contents of the buffer.
 
   */
-  const completeBufferFromMemory = new Uint8Array(memory.buffer)
+  //const completeBufferFromMemory = new Uint8Array(memory.buffer)
 
-  console.log("🤖 buffer:", completeBufferFromMemory)
-  console.log("start   --->", completeBufferFromMemory[helloStringPosition], String.fromCharCode(completeBufferFromMemory[helloStringPosition]))
-  console.log("extract --->", completeBufferFromMemory.slice(helloStringPosition, helloStringPosition+11))
+  //console.log("extract --->", completeBufferFromMemory.slice(helloStringPosition, helloStringPosition+11))
 
-  completeBufferFromMemory.slice(helloStringPosition, helloStringPosition+11).forEach(item => console.log(item,":",String.fromCharCode(item)))
+  //completeBufferFromMemory.slice(helloStringPosition, helloStringPosition+11).forEach(item => console.log(item,":",String.fromCharCode(item)))
 
 
   const extractedBuffer = new Uint8Array(memory.buffer, helloStringPosition, 11) // 11 == length of "hello world"
 
-  console.log("😁 Uint8Array buffer:", extractedBuffer)
+  console.log(extractedBuffer)
+
+  extractedBuffer.forEach(item => console.log(item,":",String.fromCharCode(item)))
 
   const str = new TextDecoder("utf8").decode(extractedBuffer)
   console.log(`📝: ${str}`)

@@ -4,11 +4,8 @@ import (
   "unsafe"
   "fmt"
   "strings"
-
 )
 
-// Declare a main function, this is the entrypoint into our go module
-// That will be run.
 func main() { }
 
 
@@ -21,14 +18,10 @@ func alloc(size uint32) *byte {
 	return &buf[0]
 }
 
-
-
-
 //export hello
 func hello(subject *uint32, length int) uint64 { // ptrAndSize
 
   // https://radu-matei.com/blog/practical-guide-to-wasm-memory/#exchanging-strings-between-modules-and-runtimes
-
   // https://wasmedge.org/book/en/embed/go/memory.html#pass-strings-to-tinygo-functions
 
   fmt.Println("🤖", length)

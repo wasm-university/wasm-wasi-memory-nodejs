@@ -12,7 +12,6 @@ func main() { }
 //export hello
 func hello() uint64 { // ptrAndSize
 
-
   message := "hello world"
 	buf := []byte(message)
 	bufPtr := &buf[0]
